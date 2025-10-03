@@ -97,6 +97,8 @@ class DecisionTreeClassifier(object):
         if y.ndim == 1:
             y = y.reshape((-1, 1))
 
+        self.feature_scores_ = np.zeros(X.shape[1], dtype=float)
+
         self.root = self._build_tree(X, y)
 
         # normalize feature scores
@@ -113,7 +115,6 @@ class DecisionTreeClassifier(object):
         curr_depth: current depth
         """
         n_samples, n_feats = X.shape
-        self.feature_scores_ = np.zeros(n_feats, dtype=float)
 
         split = None
         split_score = 0
