@@ -1,7 +1,7 @@
 import os
 import numpy as np
 from typing import List, Tuple
-from data_generate import load_prepared_dataset
+from data_generate import generate_and_save, load_prepared_dataset
 from viz_knn import plot_k_curve, plot_decision_boundary_multi
 
 # 输出目录
@@ -55,7 +55,7 @@ def pairwise_dist(X_test, X_train, metric, mode):
     elif metric == "cosine":
         # =============== TODO (students, REQUIRED) ===============
         test_norm = np.linalg.norm(X_test, axis=1, keepdims=True)  
-        train_norm = np.linalg.norm(X_train, axis=1, keepdims=True)               
+        train_norm = np.linalg.norm(X_train, axis=1)               
         cosine_similarity = np.dot(X_test, X_train.T) / (test_norm * train_norm + 1e-12)
         dists = 1 - cosine_similarity
         return dists
@@ -115,7 +115,7 @@ def select_k_by_validation(X_train, y_train, X_val, y_val, ks: List[int], metric
     # raise NotImplementedError("Implement select_k_by_validation")
 
 
-def run_with_visualization():
+def run_with_visualization(n_classes, cluster_std, test_size, val_size):
     X_train, y_train, X_val, y_val, X_test, y_test = load_prepared_dataset(DATA_DIR)
 
     ks = [1, 3, 5, 7, 9, 11, 13]
@@ -124,6 +124,9 @@ def run_with_visualization():
 
     best_k, accs = select_k_by_validation(X_train, y_train, X_val, y_val,
                                           ks, metric=metric, mode=mode)
+    if(max(accs)<0.95):
+        return 
+    print(f"Generating data with N_CLASSES={N_CLASSES}, CLUSTER_STD={CLUSTER_STD}, TEST_SIZE={TEST_SIZE}, VAL_SIZE={VAL_SIZE}")
     print(f"[ModelSelect] best k={best_k} (val acc={max(accs):.4f})")
     plot_k_curve(ks, accs, os.path.join(OUT_DIR, "knn_k_curve.png"))
 
@@ -132,11 +135,39 @@ def run_with_visualization():
         return lambda Xq: knn_predict(Xq, X_trv, y_trv, k, metric=metric, mode=mode)
 
     ks_panel = sorted(set(ks + [best_k]))
-    plot_decision_boundary_multi(predict_fn_for_k, X_train, y_train, X_test, y_test,
+    '''plot_decision_boundary_multi(predict_fn_for_k, X_train, y_train, X_test, y_test,
                                  ks=ks_panel,
                                  out_path=os.path.join(OUT_DIR, "knn_boundary_grid.png"),
                                  grid_n=200, batch_size=4096)
+'''
+DATA_DIR     = "./input_knn"    # 输入数据目录
+RANDOM_STATE = 42               # 随机种子
+N_SAMPLES    = 1000              # 样本总数
+N_CLASSES    = 4                # 类别数 （在boundary图上会有几个色块）
+CLUSTER_STD  = 4.0              # 类内标准差（数据难度）
+TEST_SIZE    = 0.25             # 测试集比例    
+VAL_SIZE     = 0.25             # 验证集比例
 
+for n_classes in [2,3, 4,5,6,7,8]:
+    N_CLASSES = n_classes
+    for cluster_std in [2.0, 2.5, 3.0, 3.5, 4.0,4.5,5.0,5.5,6.0]:
+        CLUSTER_STD = cluster_std
+        for(test_size, val_size) in [(0.25, 0.25), (0.2, 0.2), (0.15, 0.15),(0.1, 0.1)]:
+            TEST_SIZE = test_size
+            VAL_SIZE = val_size
+            
+            generate_and_save(
+                data_dir = DATA_DIR,
+                n_samples = 1000,
+                n_classes = N_CLASSES,
+                cluster_std = CLUSTER_STD,
+                test_size = TEST_SIZE,
+                val_size = VAL_SIZE,
+                random_state = RANDOM_STATE,
+                force = True,
+            )
+            run_with_visualization(N_CLASSES, CLUSTER_STD, TEST_SIZE, VAL_SIZE)
 
+'''
 if __name__ == "__main__":
-    run_with_visualization()
+    run_with_visualization()'''

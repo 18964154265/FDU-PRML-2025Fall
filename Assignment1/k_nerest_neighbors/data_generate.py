@@ -20,8 +20,9 @@ REQUIRED_FILES = [
 ]
 
 def _summary(X_tr, y_tr, X_val, y_val, X_te, y_te):
-    print(f"[DATA] train={len(X_tr)}, val={len(X_val)}, test={len(X_te)}, "
-          f"D={X_tr.shape[1]}, classes={len(np.unique(y_tr))}")
+    pass
+    # print(f"[DATA] train={len(X_tr)}, val={len(X_val)}, test={len(X_te)}, "
+          # f"D={X_tr.shape[1]}, classes={len(np.unique(y_tr))}")
 
 def generate_and_save(
     data_dir: str = DATA_DIR,
@@ -88,7 +89,7 @@ def generate_and_save(
     np.save(os.path.join(data_dir, "X_test.npy"),  X_te)
     np.save(os.path.join(data_dir, "y_test.npy"),  y_te)
 
-    print(f"[OK] Saved dataset to {data_dir} (seed={random_state})")
+    # print(f"[OK] Saved dataset to {data_dir} (seed={random_state})")
     _summary(X_tr, y_tr, X_val, y_val, X_te, y_te)
 
 def load_prepared_dataset(data_dir: str = DATA_DIR):

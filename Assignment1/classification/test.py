@@ -42,5 +42,6 @@ def test_eval():
         print(" - PRF NOT IMPLEMENTED")
 
 if __name__ == "__main__":
+    print("曹飞扬 23307130003 实验1 part1")
     test_basic()
     test_eval()
