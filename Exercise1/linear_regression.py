@@ -107,7 +107,7 @@ class LinearRegression:
                 rmse = evaluate_rmse(y, self.predict(x))
                 print(f"[GD][Epoch {ep:4d}] rmse={rmse:.6f}, w={self.w:+.4f}, b={self.b:+.4f}")
 
-    def train_lse(self, x, y, verbose: bool = True):
+    def train_lse(self, x, y, lam, verbose: bool = True):
         """
         Closed-form (normal equation). 
         Build design matrix Phi = [x, 1] of shape (N, 2), and solve:
